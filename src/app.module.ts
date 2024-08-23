@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ReportsModule } from './reports/reports.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { APP_GUARD } from '@nestjs/core';
+
 
 @Module({
   imports: [

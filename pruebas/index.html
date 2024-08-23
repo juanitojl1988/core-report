@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>PDF Generator</title>
+</head>
+
+<body>
+    
+
+    <button onclick="generatePdf()">Generate PDF</button>
+    <iframe id="excel-iframe" style="width:100%; height:600px; border:none;"></iframe>
+
+    <script>
+        function generatePdf() {
+            fetch('http://localhost:3000/reports/genereExcel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "template": "<table> <thead> <tr> <th>Item</th> <th>Quantity</th> <th>Price</th> </tr> </thead> <tbody> {{#each data}} <tr> <td>{{item}}</td> <td>{{quantity}}</td> <td>{{price}}</td> </tr> {{/each}} </tbody> </table>",
+                    "type": "xlsx",
+                    "haveData": "SI",
+                    "sql": "select cproceso , numero_proceso , unidad_judicial , fecha_inicio   from proceso limit 10",
+                    "data": [
+                        { item: 'Apple', quantity: 10, price: 1.2 },
+                        { item: 'Banana', quantity: 5, price: 0.8 },
+                        { item: 'Orange', quantity: 7, price: 1.0 }
+                    ],
+                    "images": {}
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob();
+                    } else {
+                        throw new Error('Network response was not ok.');
+                    }
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const rulfinal='https://view.officeapps.live.com/op/view.aspx?src='+url
+                    console.log('url: '+rulfinal);
+                   
+                    document.getElementById('excel-iframe').src = rulfinal;
+
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+    </script>
+</body>
+
+</html>
