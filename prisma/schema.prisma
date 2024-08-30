@@ -12,3 +12,10 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+model Test {
+  id    Int    @id @default(autoincrement()) // Identificador único que se autoincrementa
+  name  String // Campo de texto para el nombre
+  email String @unique // Campo de texto para el email, debe ser único
+}

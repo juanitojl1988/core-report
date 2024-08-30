@@ -33,7 +33,7 @@ export class ReportsController {
       const { haveData, sql, parameter } = createReportDto;
       if (haveData === 'NO') {
         this.logger.log('Tiene definido obtener la data desde este Core');
-        const result = this.queryService.executeQuery(sql, parameter);
+        const result = this.queryService.executeQuery(sql,'',1);
 
       }
       const reportBuffer = await this.reportsService.generateReport(createReportDto);
@@ -55,7 +55,7 @@ export class ReportsController {
       const { haveData, sql, parameter } = createReportDto;
       if (haveData === 'NO') {
         this.logger.log('Tiene definido obtener la data desde este Core');
-        const result = this.queryService.executeQuery(sql, parameter);
+        const result = this.queryService.executeQuery(sql,'',1);
 
       }
       const reportBuffer = await this.reportsService.generateReport(createReportDto);
