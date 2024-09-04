@@ -15,17 +15,20 @@ export class ReportsService {
 
   async generateReport(createReportDto: CreateReportDto): Promise<Buffer> {
     try {
-      const { template, type, data, images } = createReportDto;
+      const { template, type, data } = createReportDto;
       let recipe;
       switch (type) {
         case 'pdf':
-          recipe =  'chrome-pdf';//'html-to-pdf';
+          recipe = 'chrome-pdf';//'html-to-pdf';
           break;
         case 'docx':
           recipe = 'html-to-docx';
           break;
         case 'xlsx':
           recipe = 'html-to-xlsx';
+          break;
+        case 'xlsx2':
+          recipe = 'xlsx';
           break;
         default:
           throw new Error('Formato no soportado');
@@ -37,10 +40,7 @@ export class ReportsService {
           engine: 'handlebars',
           recipe: recipe,
         },
-        data: {
-          ...data,
-          images: images || {}, // Pasa las imágenes al contexto del reporte
-        },
+        data,
       });
 
       return response.content;

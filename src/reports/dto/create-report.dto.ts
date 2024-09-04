@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsIn, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPositive, IsString } from 'class-validator';
+import { QueryDto } from './query-report.dto';
 
 export class CreateReportDto {
 
@@ -14,7 +15,7 @@ export class CreateReportDto {
 
     @IsString()
     @IsNotEmpty()
-    @IsIn(['xlsx', 'pdf', 'docx'])
+    @IsIn(['xlsx', 'pdf', 'docx', 'xlsx2'])
     public type: string;
 
     @IsString()
@@ -25,15 +26,10 @@ export class CreateReportDto {
     @IsOptional()
     data?: Record<string, any>;
 
-    @IsObject()
     @IsOptional()
-    parameter?: Record<string, any>;
-
-    @IsString()
-    public sql?: string;
-
     @IsObject()
-    @IsOptional()
-    images?: Record<string, string>;  // Imágenes en base64 como un objeto de clave-valor
+    public query?: Record<string, QueryDto>;
+
+
 
 }

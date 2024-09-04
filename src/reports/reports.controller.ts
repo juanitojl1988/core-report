@@ -12,52 +12,27 @@ export class ReportsController {
 
   constructor(private readonly reportsService: ReportsService, private readonly queryService: QueryService) { }
 
-  @Get('download')
-  async downloadExcel(@Res() res: Response) {
-    const filePath = path.join(__dirname, '..','..', 'public', 'report.xlsx');
-
-    // Configurar cabeceras para la descarga
-    res.setHeader('Content-Disposition', 'inline; filename=report.xlsx');
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-
-    // Enviar el archivo como respuesta
-    res.sendFile(filePath);
-  }
-
-
-
-  @Post('genereExcel')
-  //@UseGuards(AuthGuard('api-key'))
-  async genereExcel(@Body() createReportDto: CreateReportDto, @Res() res: Response) {
-    try {
-      const { haveData, sql, parameter } = createReportDto;
-      if (haveData === 'NO') {
-        this.logger.log('Tiene definido obtener la data desde este Core');
-        const result = this.queryService.executeQuery(sql,'',1);
-
-      }
-      const reportBuffer = await this.reportsService.generateReport(createReportDto);
-      res.setHeader('Content-Disposition', `inline; filename="reporte.${createReportDto.type}"`);
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-
-      res.send(reportBuffer);
-    } catch (err) {
-      this.logger.error('Error al generar el reporte:', err);
-      res.status(500).send('Error al generar el reporte');
-    }
-  }
-
-
+ 
   @Post('generarReport')
   //@UseGuards(AuthGuard('api-key'))
   async generarReporte(@Body() createReportDto: CreateReportDto, @Res() res: Response) {
     try {
-      const { haveData, sql, parameter } = createReportDto;
+      const { haveData,data } = createReportDto;
+      const resultsMap = new Map<string, any>();
+
       if (haveData === 'NO') {
         this.logger.log('Tiene definido obtener la data desde este Core');
-        const result = this.queryService.executeQuery(sql,'',1);
 
+        if (createReportDto.query) {
+          for (const [key, query] of Object.entries(createReportDto.query)) {
+            console.log(`Consulta ${key}:`, query.sql);
+            console.log(`Consulta Count ${key}:`, query.sqlCount);
+            const result = await this.queryService.executeQuery(query, 100);
+            data[key] = result;
+          }
+        }
       }
+      createReportDto.data=data;
       const reportBuffer = await this.reportsService.generateReport(createReportDto);
       res.setHeader('Content-Disposition', `attachment; filename="reporte.${createReportDto.type}"`);
       res.setHeader('Content-Type', {
@@ -71,6 +46,23 @@ export class ReportsController {
       res.status(500).send('Error al generar el reporte');
     }
   }
+
+  @Get('download')
+  async downloadExcel(@Res() res: Response) {
+    const filePath = path.join(__dirname, '..', '..', 'public', 'report.xlsx');
+
+    // Configurar cabeceras para la descarga
+    res.setHeader('Content-Disposition', 'inline; filename=report.xlsx');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+    // Enviar el archivo como respuesta
+    res.sendFile(filePath);
+  }
+
+
+
+  
+
 
   /* @Get('/generate-report')
   async generateReport(@Res() res: Response) {

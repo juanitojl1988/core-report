@@ -8,11 +8,11 @@ export class QueryController {
 
   constructor(private readonly queryService: QueryService) { }
 
-  @Post('query')
+ /*  @Post('query')
   async executeQuery(@Body() body: { query: string; countQuery: string }) {
     const { query, countQuery } = body;
     const result = await this.queryService.executeQuery(query,countQuery,100);
     return { result };
-  }
+  } */
 
 }
