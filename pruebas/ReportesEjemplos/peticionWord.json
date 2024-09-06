@@ -1,0 +1,21 @@
+{
+    "nameReport": "reportePrueba",
+    "template": "https://www.seps.gob.ec/wp-content/uploads/3.-Listado-de-asistentes.docx",
+    "query": {
+        "one": {
+            "sql": "SELECT 1 AS generationDate, 'Juan' AS generatedBy, 'juan@example.com' AS station",
+            "sqlCount": ""
+        },
+        "list": {
+            "sql": "select cusuario as id,razon_social as name,email as email from usuario ",
+            "sqlCount": "select count(*) from usuario u "
+        }
+    },
+    "type": "pdf",
+    "haveData": "si",
+    "data": {
+        "generationDate": "01/09/2024",
+        "generatedBy": "Juan Pérez",
+        "station": "Oficina Principal"
+    }
+}
