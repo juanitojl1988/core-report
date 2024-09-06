@@ -1,16 +1,16 @@
 import { Type } from 'class-transformer';
-import { IsIn, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPositive, IsString } from 'class-validator';
+import { IsIn, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPositive, IsString, ValidateIf } from 'class-validator';
 import { QueryDto } from './query-report.dto';
 
 export class CreateReportDto {
 
     @IsString()
     @IsNotEmpty()
-    public name: string;
+    public nameReport: string;
 
     @IsString()
     @IsNotEmpty()
-    @IsIn(['SI', 'NO'])
+    @IsIn(['si', 'no'])
     public haveData: string;
 
     @IsString()
@@ -26,8 +26,9 @@ export class CreateReportDto {
     @IsOptional()
     data?: Record<string, any>;
 
-    @IsOptional()
+    @ValidateIf(o => o.haveData === 'si')
     @IsObject()
+    @IsNotEmpty()
     public query?: Record<string, QueryDto>;
 
 

@@ -15,6 +15,9 @@ export class QueryService {
         let allData: any[] = [];
         let offset = 0;
         let moreData = true;
+
+        this.logger.log(`SQL: ${sql}, SQL Count: ${sqlCount}`);
+
         try {
             const resultCount: { count: number }[] = await this.prisma.$queryRawUnsafe(sqlCount);
             this.logger.log(`total Registros: ${resultCount[0]?.count}`);
@@ -35,10 +38,17 @@ export class QueryService {
         }
     }
 
-    async executeQuery1(query: string, limit: number) {
-        this.logger.log(`Consulta a Ejecutar: ${query}`);
-        const result = await this.prisma.$queryRawUnsafe(query);
-        return result;
+    async executeQueryOne(query: QueryDto) {
+        const { sql } = query;
+        this.logger.log(`SQL: ${sql}`);
+        try {
+            const result: any[] = await this.prisma.$queryRawUnsafe(sql);
+            this.logger.log(`Registros Recuperados: ${result.length}`);
+            return result;
+        } catch (error) {
+            this.handlePrismaError(error); // Maneja el error de Prisma
+            throw error;
+        }
     }
 
     async selectFromTable(tableName: string, whereClause: string = '1=1') {

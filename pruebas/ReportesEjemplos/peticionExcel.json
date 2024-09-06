@@ -1,0 +1,21 @@
+{
+    "nameReport": "reportePrueba",
+    "template": "<style> table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-top: 20px; } th, td { border: 1px solid #000; padding: 8px; text-align: left; } th { background-color: #4CAF50; color: white; font-weight: bold; } tr:nth-child(even) { background-color: #f2f2f2; } tr:hover { background-color: #ddd; } .title { text-align: center; font-size: 18px; margin: 10px 0; } .header { font-size: 14px; margin: 5px 0; font-weight: normal; } </style> <table> <thead> <tr> <th colspan='3' class='title'>Reporte de Usuarios</th> </tr> <tr> <th class='header'>Fecha de Generación:</th> <td class='header' colspan='2'>{{one.generationdate}}</td> </tr> <tr> <th class='header'>Generado por:</th> <td class='header' colspan='2'>{{one.generatedby}}</td> </tr> <tr> <th class='header'>Estación:</th> <td class='header' colspan='2'>{{one.station}}</td> </tr> <tr> <td colspan='3' style='height: 10px;'></td> <!-- Fila de separación --> </tr> <tr> <th>ID</th> <th>Nombre</th> <th>Email</th> </tr> </thead> <tbody> {{#each list}} <tr> <td>{{this.id}}</td> <td>{{this.name}}</td> <td>{{this.email}}</td> </tr> {{/each}} </tbody> </table>",
+    "query": {
+        "one": {
+            "sql": "SELECT 1 AS generationDate, 'Juan' AS generatedBy, 'juan@example.com' AS station",
+            "sqlCount": ""
+        },
+        "list": {
+            "sql": "select cusuario as id,razon_social as name,email as email from usuario where cusuario=5",
+            "sqlCount": "select count(*) from usuario u where cusuario=5"
+        }
+    },
+    "type": "pdf",
+    "haveData": "no",
+    "data": {
+        "generationDate": "01/09/2024",
+        "generatedBy": "Juan Pérez",
+        "station": "Oficina Principal"
+    }
+}
