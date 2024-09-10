@@ -3,7 +3,6 @@ import * as jsreport from 'jsreport';
 import { CreateReportDto } from './dto/create-report.dto';
 import { QueryService } from 'src/query/query.service';
 import { QueryDto } from './dto/query-report.dto';
-import path from 'path';
 import * as fs from 'fs';
 import { FileDownloader } from 'src/util/util-downloadFile';
 import { HttpService } from '@nestjs/axios';
@@ -30,31 +29,32 @@ export class ReportsService {
   async generateReportOfTemplateDocx(createReportDto: CreateReportDto): Promise<Buffer> {
     let data: Record<string, any> = {};
     const { template, haveData, query } = createReportDto;
-    const fileTemplate = await this.fileDownloader.downloadFile(template, ".docx");
-   // const templateContent = await fs.promises.readFile(fileTemplate);
-   const templateContent = await fs.promises.readFile("D:\\PROJECT_JP\\reportNS\\core-report\\dist\\temp_templates\\temp1.docx");
+    //const fileTemplate = await this.fileDownloader.downloadFile(template, ".docx");
+    // const templateContent = await fs.promises.readFile(fileTemplate);
+    const templateContent = await fs.promises.readFile("D:\\PROJECT_JP\\reportNS\\core-report\\dist\\temp_templates\\temp1.docx");
     this.logger.log('Ruta Plantilla:', templateContent);
-
-    
-   
-
-
     if (haveData === 'no')
       data = await this.extractData(query);
     else
       data = createReportDto.data;
-       data = {
-        users: [
-          { name: 'Juan Pérez', email: 'juan.perez@example.com' },
-          { name: 'María López', email: 'maria.lopez@example.com' },
-        ],
-      };
+    data = {
+      users: [
+        { name: 'Juan Pérez', email: 'juan.perez@example.com' },
+        { name: 'María López', email: 'maria.lopez@example.com' },
+      ],
+    };
     try {
       const response = await this.jsreportInstance.render({
         template: {
-          content: templateContent,
+          // content: templateContent,
           recipe: 'docx',
-          engine: 'none', // No usar un motor si estamos usando un activo
+          engine: 'handlebars', // No usar un motor si estamos usando un activo
+          docx: {
+            templateAsset: {
+              content: await fs.promises.readFile('D:\\PROJECT_JP\\reportNS\\core-report\\dist\\temp_templates\\temp1.docx', 'base64'),  // Base DOCX en base64
+              encoding: 'base64'
+            }
+          }
         },
         data: data,
       });

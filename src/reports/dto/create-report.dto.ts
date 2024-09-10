@@ -13,6 +13,9 @@ export class CreateReportDto {
     @IsIn(['si', 'no'])
     public haveData: string;
 
+    @IsOptional()
+    public isView?: boolean;
+
     @IsString()
     @IsNotEmpty()
     @IsIn(['xlsx', 'pdf', 'docx', 'xlsx2'])

@@ -16,3 +16,9 @@
     "nameReport": "Reporte de Usuarios",
     "isView": false
 }
+
+{
+    "downloadUrl": "http://tu-api-nest.com/reports/download?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaWxlUGF0aCI6Ii9ob21lL3BhYmxpdG8vRG9jdW1lbnRvcy9MYXRhbXRlay9Qcm95ZWN0b1JlcG9ydGVyaWEvY29yZVJlcG9ydGUvY29yZS1yZXBvcnQvZGlzdC9SZXBvUmVwb3J0ZXMvUmVwb3J0ZV8xNzI1NzQ2MzQyMDQ0LTZ4ZDVraS54bHN4IiwiaWF0IjoxNzI1NzQ2MzQyLCJleHAiOjE3MjU3NDY5NDJ9.pq1TOwFLh7b57mjeGMt-PNvEfXkNJb5cC7VicGA-aRQ",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaWxlUGF0aCI6Ii9ob21lL3BhYmxpdG8vRG9jdW1lbnRvcy9MYXRhbXRlay9Qcm95ZWN0b1JlcG9ydGVyaWEvY29yZVJlcG9ydGUvY29yZS1yZXBvcnQvZGlzdC9SZXBvUmVwb3J0ZXMvUmVwb3J0ZV8xNzI1NzQ2MzQyMDQ0LTZ4ZDVraS54bHN4IiwiaWF0IjoxNzI1NzQ2MzQyLCJleHAiOjE3MjU3NDY5NDJ9.pq1TOwFLh7b57mjeGMt-PNvEfXkNJb5cC7VicGA-aRQ",
+    "filePath": "/home/pablito/Documentos/Latamtek/ProyectoReporteria/coreReporte/core-report/dist/RepoReportes/Reporte_1725746342044-6xd5ki.xlsx"
+}
