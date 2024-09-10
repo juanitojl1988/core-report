@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 # Copia los archivos de package.json y package-lock.json
 COPY package*.json ./
 
-ENV NODE_TLS_REJECT_UNAUTHORIZED=0
+#ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
 # Instala las dependencias
 RUN npm install --production
