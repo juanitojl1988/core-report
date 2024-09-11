@@ -17,8 +17,8 @@ async function bootstrap() {
     transform: true,
   }));
 
-  await app.listen(envs.port);
-  logger.log('Reports running en el port ' + envs.port);
+  await app.listen(3020);
+  logger.log('Reports running en el port ' + 3020);
 }
 
 bootstrap();

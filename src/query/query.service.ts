@@ -7,8 +7,40 @@ import { QueryDto } from 'src/reports/dto/query-report.dto';
 @Injectable()
 export class QueryService {
     private readonly logger = new Logger('QueryService');
+    private readonly TYPE_QUERY_LIST: string = 'list';
+    private readonly TYPE_QUERY_ONE: string = 'one';
+    private readonly LIMIT_GROUP: number = 100;
 
     constructor(private readonly prisma: PrismaService) { }
+
+
+    async executeQueryAndFormatData(query: Record<string, QueryDto>) {
+
+        if (!query || Object.keys(query).length <= 0) {
+            return {};
+        }
+        const myData: Record<string, any> = {};
+        try {
+            //Extracion de data una fila
+            const queryOne = query[this.TYPE_QUERY_ONE];
+            if (queryOne) {
+                const dataOne = await this.executeQueryOne(queryOne);
+                myData[this.TYPE_QUERY_ONE] = dataOne[0];
+            }
+
+            //Extracion de data varias filas
+            const queryList = query[this.TYPE_QUERY_LIST];
+            if (queryList) {
+                const dataList = await this.executeQuery(queryList, this.LIMIT_GROUP);
+                myData[this.TYPE_QUERY_LIST] = dataList;
+            }
+            return myData;
+        } catch (error) {
+            this.logger.error("Error al extractData: " + error.message);
+            throw new InternalServerErrorException("Error al extractData: " + error.message);
+        }
+    }
+
 
     async executeQuery(query: QueryDto, limit: number) {
         const { sql, sqlCount } = query;

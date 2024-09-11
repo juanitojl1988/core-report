@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsIn, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPositive, IsString, ValidateIf } from 'class-validator';
+import { IsBoolean, IsIn, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPositive, isString, IsString, ValidateIf } from 'class-validator';
 import { QueryDto } from './query-report.dto';
 
 export class CreateReportDto {
@@ -18,12 +18,22 @@ export class CreateReportDto {
 
     @IsString()
     @IsNotEmpty()
-    @IsIn(['xlsx', 'pdf', 'docx', 'xlsx2'])
+    @IsIn(['xlsx', 'pdf', 'docx'])
     public type: string;
 
     @IsString()
     @IsNotEmpty()
     public template: string;
+
+    @IsNotEmpty()
+    @IsBoolean()
+    public templateIsFile: boolean;
+
+    @ValidateIf(o => o.templateIsFile === true)
+    @IsString()
+    @IsNotEmpty()
+    public extTemplate: string;
+
 
     @IsObject()
     @IsOptional()
