@@ -7,16 +7,18 @@ import { JwtModule } from '@nestjs/jwt';
 import { ReportDeleteFilesService } from './report-delete.service';
 import { ReportsController } from './report-controller';
 import { PdfReportGenerator } from './implements/reports-generator-pdf';
-import { DocxReportGenerator } from './implements/reports-generator-docx';
 import { ExcelReportGenerator } from './implements/reports-generator-excel';
+import { JsReportModule } from 'src/jsreport/jsreport.module';
+import { DocxReportGenerator } from './implements/reports-generator-docx';
+import { ExcelBigDataReportGenerator } from './implements/reports-generador-excel-bigdata';
 
 @Module({
   imports: [JwtModule.register({
     secret: 'your-secret-key',
     signOptions: { expiresIn: '1h' },
-  }), QueryModule, AuthModule, HttpModule],
+  }), QueryModule, AuthModule, HttpModule, JsReportModule],
   controllers: [ReportsController],
   exports: [ReportsService],
-  providers: [ReportsService, ReportDeleteFilesService, PdfReportGenerator,ExcelReportGenerator],
+  providers: [ReportsService,ExcelBigDataReportGenerator, ReportDeleteFilesService, PdfReportGenerator, ExcelReportGenerator, DocxReportGenerator],
 })
 export class ReportsModule { }

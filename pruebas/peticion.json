@@ -1,18 +1,22 @@
 {
+    "nameReport": "reportePrueba",
+    "template": "<style> table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-top: 20px; } th, td { border: 1px solid #000; padding: 8px; text-align: left; } th { background-color: #4CAF50; color: white; font-weight: bold; } tr:nth-child(even) { background-color: #f2f2f2; } tr:hover { background-color: #ddd; } .title { text-align: center; font-size: 18px; margin: 10px 0; } .header { font-size: 14px; margin: 5px 0; font-weight: normal; } </style> <div class='title'>Reporte de Usuarios</div> <div> <strong>Fecha de Generación:</strong> {{one.generationdate}}<br> <strong>Generado por:</strong> {{one.generatedby}}<br> <strong>Estación:</strong> {{one.station}}<br> </div> <table> <thead> <tr> <th>ID</th> <th>Nombre</th> <th>Email</th> </tr> </thead> <tbody> {{#each list}} <tr> <td>{{this.id}}</td> <td>{{this.name}}</td> <td>{{this.email}}</td> </tr> {{/each}} </tbody> </table>",
     "query": {
         "one": {
-            "type": "one",
-            "sql": "SELECT 1 AS generationDate, \u0027Juan\u0027 AS generatedBy, \u0027juan@example.com\u0027 AS station"
+            "sql": "SELECT 1 AS generationDate, 'Juan' AS generatedBy, 'juan@example.com' AS station",
+            "sqlCount": ""
         },
         "list": {
-            "type": "list",
-            "sql": "select cusuario as id,razon_social as name,email as email from usuario where cusuario\u003d5",
-            "sqlCount": "select count(*) from usuario u where cusuario\u003d5"
+            "sql": "select * from actuacion ",
+            "sqlCount": "select count(*) from actuacion"
         }
     },
-    "template": "\u003cstyle\u003e table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-top: 20px; } th, td { border: 1px solid #000; padding: 8px; text-align: left; } th { background-color: #4CAF50; color: white; font-weight: bold; } tr:nth-child(even) { background-color: #f2f2f2; } tr:hover { background-color: #ddd; } .title { text-align: center; font-size: 18px; margin: 10px 0; } .header { font-size: 14px; margin: 5px 0; font-weight: normal; } \u003c/style\u003e \u003ctable\u003e \u003cthead\u003e \u003ctr\u003e \u003cth colspan\u003d\u00273\u0027 class\u003d\u0027title\u0027\u003eReporte de Usuarios\u003c/th\u003e \u003c/tr\u003e \u003ctr\u003e \u003cth class\u003d\u0027header\u0027\u003eFecha de Generación:\u003c/th\u003e \u003ctd class\u003d\u0027header\u0027 colspan\u003d\u00272\u0027\u003e{{one.generationdate}}\u003c/td\u003e \u003c/tr\u003e \u003ctr\u003e \u003cth class\u003d\u0027header\u0027\u003eGenerado por:\u003c/th\u003e \u003ctd class\u003d\u0027header\u0027 colspan\u003d\u00272\u0027\u003e{{one.generatedby}}\u003c/td\u003e \u003c/tr\u003e \u003ctr\u003e \u003cth class\u003d\u0027header\u0027\u003eEstación:\u003c/th\u003e \u003ctd class\u003d\u0027header\u0027 colspan\u003d\u00272\u0027\u003e{{one.station}}\u003c/td\u003e \u003c/tr\u003e \u003ctr\u003e \u003ctd colspan\u003d\u00273\u0027 style\u003d\u0027height: 10px;\u0027\u003e\u003c/td\u003e \u003c!-- Fila de separación --\u003e \u003c/tr\u003e \u003ctr\u003e \u003cth\u003eID\u003c/th\u003e \u003cth\u003eNombre\u003c/th\u003e \u003cth\u003eEmail\u003c/th\u003e \u003c/tr\u003e \u003c/thead\u003e \u003ctbody\u003e {{#each list}} \u003ctr\u003e \u003ctd\u003e{{this.id}}\u003c/td\u003e \u003ctd\u003e{{this.name}}\u003c/td\u003e \u003ctd\u003e{{this.email}}\u003c/td\u003e \u003c/tr\u003e {{/each}} \u003c/tbody\u003e \u003c/table\u003e",
+    "templeteIsDefaul":"si",
+    "type": "xlsx2",
     "haveData": "no",
-    "type": "xlsx",
-    "nameReport": "Reporte de Usuarios",
-    "isView": false
+    "data": {
+        "generationDate": "01/09/2024",
+        "generatedBy": "Juan Pérez",
+        "station": "Oficina Principal"
+    }
 }

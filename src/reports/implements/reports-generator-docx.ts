@@ -1,22 +1,17 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ReportGenerator } from '../interfaces/reports-generator';
-import * as jsreport from 'jsreport';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { FileDownloader } from 'src/util/util-downloadFile';
 import { QueryService } from 'src/query/query.service';
 import * as fs from 'fs';
+import { JsReportService } from 'src/jsreport/jsreport.service';
 
 @Injectable()
 export class DocxReportGenerator implements ReportGenerator {
     private readonly logger = new Logger('DocxReportGenerator');
-    private jsreportInstance;
 
-    constructor(private readonly queryService: QueryService,) {
-        this.jsreportInstance = jsreport();
-        this.jsreportInstance.init().catch((err) => {
-            this.logger.error('Error al iniciar jsreport:', err);
-        });
-    }
+
+    constructor(private readonly queryService: QueryService, private readonly jsReportService: JsReportService) { }
 
     async generate(createReportDto: CreateReportDto): Promise<Buffer> {
         const { template, haveData, query, templateIsFile, extTemplate } = createReportDto;
@@ -37,7 +32,8 @@ export class DocxReportGenerator implements ReportGenerator {
 
         //genero el reporte con jsreport    
         try {
-            const response = await this.jsreportInstance.render({
+            const jsreportInstance = this.jsReportService.getInstance();
+            const response = await jsreportInstance.render({
                 template: {
                     recipe: 'docx',
                     engine: 'handlebars',

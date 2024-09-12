@@ -1,19 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { ReportGenerator } from '../interfaces/reports-generator';
-import * as jsreport from 'jsreport';
+import { QueryService } from 'src/query/query.service';
+import { JsReportService } from 'src/jsreport/jsreport.service';
 
 
 @Injectable()
 export class PdfReportGenerator implements ReportGenerator {
-    private jsreportInstance;
 
-    constructor() {
-        this.jsreportInstance = jsreport();
-        this.jsreportInstance.init();
-    }
+
+    constructor(private readonly queryService: QueryService, private readonly jsReportService: JsReportService) { }
+
 
     async generate(data: Record<string, any>): Promise<Buffer> {
-        return await this.jsreportInstance.render({
+
+        const jsreportInstance = this.jsReportService.getInstance();
+        return await jsreportInstance.render({
             template: {
                 content: data.template,
                 engine: 'handlebars',

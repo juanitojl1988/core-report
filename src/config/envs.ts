@@ -2,7 +2,7 @@ import 'dotenv/config';
 import * as joi from 'joi';
 
 interface EnvVars {
-  //PORT: number;
+  PORT_CORE: number;
   DATABASE_URL: string;
   CRON_EXPRESSION_DELETE_REPORTES: string;
   PATH_REPO_REPORTES: string;
@@ -10,7 +10,7 @@ interface EnvVars {
 
 const envsSchema = joi
   .object({
-   // PORT: joi.number().required(),
+    PORT_CORE: joi.number().required(),
     DATABASE_URL: joi.string().required(),
     PATH_REPO_REPORTES: joi.string().required(),
     CRON_EXPRESSION_DELETE_REPORTES: joi.string().required()
@@ -26,7 +26,7 @@ if (error) {
 const envVars: EnvVars = value;
 
 export const envs = {
- // port: envVars.PORT,
+  port_core: envVars.PORT_CORE,
   databaseurl: envVars.DATABASE_URL,
   cron_expression_delete_reportes: envVars.CRON_EXPRESSION_DELETE_REPORTES,
   path_repo_reportes: envVars.PATH_REPO_REPORTES

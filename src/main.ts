@@ -8,17 +8,17 @@ async function bootstrap() {
   const logger = new Logger('Main');
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
- 
+
   app.setGlobalPrefix('api/reports');
 
   app.useGlobalPipes(new ValidationPipe({
-    whitelist: true, 
-    forbidNonWhitelisted: true, 
+    whitelist: true,
+    forbidNonWhitelisted: true,
     transform: true,
   }));
 
-  await app.listen(3020);
-  logger.log('Reports running en el port ' + 3020);
+  await app.listen(envs.port_core);
+  logger.log('Reports running en el port ' + envs.port_core);
 }
 
 bootstrap();

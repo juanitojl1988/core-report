@@ -1,28 +1,37 @@
-import { Body, Controller, Get, Logger, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, InternalServerErrorException, Logger, Post, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ReportsService } from './reports.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { FileManager } from 'src/util/util-files';
 import * as fs from 'fs';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('')
 export class ReportsController {
     private readonly logger = new Logger('ReportsController');
-    private jwtService: any;
-    constructor(private readonly reportsService: ReportsService) { }
+
+    constructor(private readonly reportsService: ReportsService, private readonly jwtService: JwtService) { }
 
 
     @Post('generateReport')
     //@UseGuards(AuthGuard('api-key'))
     async generateReport(@Body() createReportDto: CreateReportDto, @Res() res: Response) {
         try {
+
+            const startTime = process.hrtime();
+
+
             const reportBuffer = await this.reportsService.generateReport(createReportDto);
-            const filePath = await new FileManager().saveFile(reportBuffer, createReportDto.type);
-            const token = this.jwtService.sign({ filePath }, { expiresIn: '60m' });
-            return res.json({ token, filePath });
+            const { pathFile, sizeBytes, fileExtension } = await new FileManager().saveFile(reportBuffer, createReportDto.type);
+            const token = this.jwtService.sign({ pathFile }, { expiresIn: '60m' });
+
+            const endTime = process.hrtime(startTime);
+            const elapsedTimeInSeconds = endTime[0] + endTime[1] / 1e9; 
+            
+            return res.json({ token, pathFile, sizeBytes, fileExtension,elapsedTimeInSeconds });
         } catch (error) {
             this.logger.error("Error al generateReport, Error: " + error);
-            throw error;
+            throw new InternalServerErrorException("Error al generateReport, Error: " + error);
         }
     }
 

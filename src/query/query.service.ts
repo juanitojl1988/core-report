@@ -24,7 +24,7 @@ export class QueryService {
             //Extracion de data una fila
             const queryOne = query[this.TYPE_QUERY_ONE];
             if (queryOne) {
-                const dataOne = await this.executeQueryOne(queryOne);
+                const dataOne = await this.executeQueryOne(queryOne.sql);
                 myData[this.TYPE_QUERY_ONE] = dataOne[0];
             }
 
@@ -70,8 +70,8 @@ export class QueryService {
         }
     }
 
-    async executeQueryOne(query: QueryDto) {
-        const { sql } = query;
+    async executeQueryOne(sql: string) {
+
         this.logger.log(`SQL: ${sql}`);
         try {
             const result: any[] = await this.prisma.$queryRawUnsafe(sql);
