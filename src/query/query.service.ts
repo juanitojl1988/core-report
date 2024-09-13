@@ -13,9 +13,7 @@ export class QueryService {
 
     constructor(private readonly prisma: PrismaService) { }
 
-
     async executeQueryAndFormatData(query: Record<string, QueryDto>) {
-
         if (!query || Object.keys(query).length <= 0) {
             return {};
         }
@@ -24,7 +22,7 @@ export class QueryService {
             //Extracion de data una fila
             const queryOne = query[this.TYPE_QUERY_ONE];
             if (queryOne) {
-                const dataOne = await this.executeQueryOne(queryOne.sql);
+                const dataOne = await this.executeQueryForBySqlAndParameter(queryOne.sql, queryOne.parameter);
                 myData[this.TYPE_QUERY_ONE] = dataOne[0];
             }
 
@@ -47,15 +45,12 @@ export class QueryService {
         let allData: any[] = [];
         let offset = 0;
         let moreData = true;
-
-        this.logger.log(`SQL: ${sql}, SQL Count: ${sqlCount}`);
-
         try {
-            const resultCount: { count: number }[] = await this.prisma.$queryRawUnsafe(sqlCount);
+            const resultCount: { count: number }[] = await this.executeQueryForBySqlAndParameter(sqlCount, query.parameter);
             this.logger.log(`total Registros: ${resultCount[0]?.count}`);
             while (moreData) {
                 const paginatedQuery = `${sql} LIMIT ${limit} OFFSET ${offset}`;
-                const result: any[] = await this.prisma.$queryRawUnsafe(paginatedQuery);
+                const result: any[] = await this.executeQueryForBySqlAndParameter(paginatedQuery, query.parameter);
                 this.logger.log(`Registros Recuperados: ${result.length}, de limit: ${limit}, offset: ${offset}`);
                 allData = allData.concat(result);
                 if (result.length < limit || allData.length >= resultCount[0]?.count) {
@@ -70,24 +65,52 @@ export class QueryService {
         }
     }
 
-    async executeQueryOne(sql: string) {
-
-        this.logger.log(`SQL: ${sql}`);
+    async executeQueryForBySqlAndParameter(query: string, parameters: Record<string, any>) {
         try {
-            const result: any[] = await this.prisma.$queryRawUnsafe(sql);
+            let sqlCambiado = "";
+            this.logger.log("QueryOriginal: " + query);
+            sqlCambiado = this.replaceQueryParams(query, parameters);
+            this.logger.log("QueryCambiado: " + sqlCambiado);
+
+            const result: any[] = await this.prisma.$queryRawUnsafe(sqlCambiado);
             this.logger.log(`Registros Recuperados: ${result.length}`);
             return result;
         } catch (error) {
-            this.handlePrismaError(error); // Maneja el error de Prisma
+            this.logger.error(`Error al realizar la consulta: ${error.message}`);
             throw error;
         }
     }
 
-    async selectFromTable(tableName: string, whereClause: string = '1=1') {
-        const query = `SELECT * FROM ${tableName} WHERE ${whereClause}`;
-        const result = await this.prisma.$queryRawUnsafe(query);
-        return result;
+
+    replaceQueryParams(query: string, parameters: Record<string, any>): string {
+
+        this.logger.log(`55555: ${parameters}`);
+
+        if (!parameters || Object.keys(parameters).length === 0) {
+            return query;
+        }
+
+        // Reemplaza cada parámetro en la consulta
+        Object.keys(parameters).forEach(param => {
+            const value = parameters[param];
+            const regex = new RegExp(`:${param}`, 'g');
+
+            // Si el valor es un array, formatea los valores como una lista para el IN
+            if (Array.isArray(value)) {
+                const formattedArray = value.map(v => `'${v}'`).join(', ');
+                query = query.replace(regex, `(${formattedArray})`);
+            } else if (typeof value === 'string') {
+                // Escapar valor si es una cadena
+                query = query.replace(regex, `'${value}'`);
+            } else {
+                // Dejar el valor sin comillas si no es una cadena
+                query = query.replace(regex, value);
+            }
+        });
+
+        return query;
     }
+
 
     private handlePrismaError(error: any): void {
         if (error instanceof PrismaClientKnownRequestError) {

@@ -21,7 +21,8 @@ export class ExcelBigDataReportGenerator implements ReportGenerator {
         const sql = query['list'].sql;
         try {
 
-            const resultCount: { count: number }[] = await this.queryService.executeQueryOne(sqlCount);
+            // const resultCount: { count: number }[] = await this.queryService.executeQueryOne(sqlCount);
+            const resultCount: { count: number }[] = await this.queryService.executeQueryForBySqlAndParameter(null, null);
             this.logger.log(`Total Registros: ${resultCount[0]?.count}`);
             if (resultCount[0]?.count <= 0) {
                 throw new InternalServerErrorException('No existen Registros para generar el reporte');
@@ -31,7 +32,8 @@ export class ExcelBigDataReportGenerator implements ReportGenerator {
             const worksheet = workbook.addWorksheet('Report');
             while (moreData) {
                 const paginatedQuery = `${sql} LIMIT ${limit} OFFSET ${offset}`;
-                const result: any[] = await this.queryService.executeQueryOne(paginatedQuery);
+                //const result: any[] = await this.queryService.executeQueryOne(paginatedQuery);
+                const result: any[] = await this.queryService.executeQueryForBySqlAndParameter(null, null);
                 this.logger.log(`Registros Recuperados: ${result.length}, de limit: ${limit}, offset: ${offset}`);
                 totalRows = totalRows + result.length;
                 if (result.length < limit || totalRows >= resultCount[0]?.count) {

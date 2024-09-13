@@ -4,10 +4,9 @@ import { IsIn, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPositive, IsString,
 export class QueryDto {
 
 
-    @IsString()
-    @IsNotEmpty()
-    @IsIn(['list', 'one'])
-    public type: string;
+    @IsObject()
+    @IsOptional()
+    parameter?: Record<string, any>;
 
     @IsString()
     @IsNotEmpty()

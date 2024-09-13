@@ -17,7 +17,7 @@ export class CreateReportDto {
 
     @IsString()
     @IsNotEmpty()
-    @IsIn(['xlsx', 'pdf', 'docx','xlsx2'])
+    @IsIn(['xlsx', 'pdf', 'docx', 'xlsx2'])
     public type: string;
 
     @ValidateIf(o => o.type === 'xlsx')
@@ -26,17 +26,19 @@ export class CreateReportDto {
     @IsIn(['si', 'no'])
     public templeteIsDefaul: string;
 
+    @ValidateIf(o => o.type != 'xlsx2')
     @IsString()
     @IsNotEmpty()
     public template: string;
 
     @IsNotEmpty()
     @IsBoolean()
-    public templateIsFile: boolean=false;
+    public templateIsFile: boolean = false;
 
     @ValidateIf(o => o.templateIsFile === true)
     @IsString()
     @IsNotEmpty()
+    @IsIn(['xlsx', 'xls', 'docx', 'doc'])
     public extTemplate: string;
 
 
@@ -49,6 +51,5 @@ export class CreateReportDto {
     @IsNotEmpty()
     public query?: Record<string, QueryDto>;
 
-
-
+   
 }

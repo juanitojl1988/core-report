@@ -6,10 +6,12 @@ interface EnvVars {
   DATABASE_URL: string;
   CRON_EXPRESSION_DELETE_REPORTES: string;
   PATH_REPO_REPORTES: string;
+  API_KEY: string;
 }
 
 const envsSchema = joi
   .object({
+    API_KEY: joi.string().required(),
     PORT_CORE: joi.number().required(),
     DATABASE_URL: joi.string().required(),
     PATH_REPO_REPORTES: joi.string().required(),
@@ -29,6 +31,7 @@ export const envs = {
   port_core: envVars.PORT_CORE,
   databaseurl: envVars.DATABASE_URL,
   cron_expression_delete_reportes: envVars.CRON_EXPRESSION_DELETE_REPORTES,
-  path_repo_reportes: envVars.PATH_REPO_REPORTES
+  path_repo_reportes: envVars.PATH_REPO_REPORTES,
+  api_key: envVars.API_KEY,
 
 };

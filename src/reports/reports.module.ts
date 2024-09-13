@@ -11,14 +11,13 @@ import { ExcelReportGenerator } from './implements/reports-generator-excel';
 import { JsReportModule } from 'src/jsreport/jsreport.module';
 import { DocxReportGenerator } from './implements/reports-generator-docx';
 import { ExcelBigDataReportGenerator } from './implements/reports-generador-excel-bigdata';
+import { envs } from 'src/config';
 
 @Module({
-  imports: [JwtModule.register({
-    secret: 'your-secret-key',
-    signOptions: { expiresIn: '1h' },
-  }), QueryModule, AuthModule, HttpModule, JsReportModule],
+  imports: [JwtModule.register({ secret: envs.api_key,signOptions: { expiresIn: '1h' },}), 
+    QueryModule, AuthModule, HttpModule, JsReportModule],
   controllers: [ReportsController],
   exports: [ReportsService],
-  providers: [ReportsService,ExcelBigDataReportGenerator, ReportDeleteFilesService, PdfReportGenerator, ExcelReportGenerator, DocxReportGenerator],
+  providers: [ReportsService, ExcelBigDataReportGenerator, ReportDeleteFilesService, PdfReportGenerator, ExcelReportGenerator, DocxReportGenerator],
 })
 export class ReportsModule { }

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ReportGenerator } from '../interfaces/reports-generator';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { FileDownloader } from 'src/util/util-downloadFile';
@@ -19,9 +19,14 @@ export class DocxReportGenerator implements ReportGenerator {
             this.logger.error("Este Tipo de Reporte solo permite plantilla de tipo Archivo");
             throw new InternalServerErrorException("Este Tipo de Reporte solo permite plantilla de tipo Archivo");
         }
+
+        if (templateIsFile && !(extTemplate === 'doc' || extTemplate === 'docx')) {
+            throw new BadRequestException('Debe especificar un templete  con extensión .doc o .docx');
+        }
+
         //descargo la plantilla
         const pathTemplete = await new FileDownloader().downloadFile(template, extTemplate);
-        this.logger.log('Ruta Plantilla:', pathTemplete);
+        this.logger.log('Ruta Plantilla: ' + pathTemplete);
 
         //obtengo la data de las consultas definidas
         let data: Record<string, any> = {};
@@ -40,6 +45,8 @@ export class DocxReportGenerator implements ReportGenerator {
                     docx: {
                         templateAsset: {
                             content: await fs.promises.readFile(pathTemplete, 'base64'),  // Base DOCX en base64
+                            //content: await fs.promises.readFile('D:\\PROJECT_JP\\ResultaReport\\list.docx', 'base64'),
+
                             encoding: 'base64'
                         }
                     }

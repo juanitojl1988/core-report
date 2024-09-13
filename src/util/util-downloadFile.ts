@@ -1,26 +1,25 @@
-import * as fs from 'fs';
 import * as path from 'path';
-import { HttpService } from '@nestjs/axios';
-import { lastValueFrom } from 'rxjs';
 import axios from 'axios';
 import { envs } from 'src/config';
 import { writeFile, mkdir } from 'fs/promises';
-import { join, dirname } from 'path';
+import { dirname } from 'path';
+import { Logger } from '@nestjs/common';
 
 export class FileDownloader {
     private readonly PATH_REPO: string = envs.path_repo_reportes;
-
+    private readonly logger = new Logger('FileDownloader');
 
     async downloadFile(url: string, ext: string): Promise<string> {
         try {
-            const fileName = "template_" + this.generateRandomFileName() + ext;
+
+            const fileName = "template_" + this.generateRandomFileName() +"."+ ext;
             const response = await axios.get(url, { responseType: 'arraybuffer' });
-            const filePath = path.join(__dirname, this.PATH_REPO);
-            await mkdir(dirname(filePath), { recursive: true });
+            await mkdir(dirname(this.PATH_REPO), { recursive: true });
             const filePathFinal = path.join(this.PATH_REPO, fileName);
             await writeFile(filePathFinal, response.data);
             return filePathFinal;
         } catch (error) {
+            this.logger.error("Error al Descargar", error.message);
             throw new Error('Error al descargar el archivo: ' + error.message);
         }
     }

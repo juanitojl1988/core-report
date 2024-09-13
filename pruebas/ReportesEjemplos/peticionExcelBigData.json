@@ -1,0 +1,22 @@
+{
+    "nameReport": "reportePrueba",
+    "template": "",
+    "query": {
+        "one": {
+            "sql": "SELECT 1 AS generationDate, 'Juan' AS generatedBy, 'juan@example.com' AS station",
+            "sqlCount": ""
+        },
+        "list": {
+            "sql": "select * from actuacion ",
+            "sqlCount": "select count(*) from actuacion"
+        }
+    },
+    "templeteIsDefaul":"si",
+    "type": "xlsx2",
+    "haveData": "no",
+    "data": {
+        "generationDate": "01/09/2024",
+        "generatedBy": "Juan Pérez",
+        "station": "Oficina Principal"
+    }
+}
