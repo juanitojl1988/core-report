@@ -84,7 +84,7 @@ export class QueryService {
 
     replaceQueryParams(query: string, parameters: Record<string, any>): string {
 
-        this.logger.log(`55555: ${parameters}`);
+       // this.logger.log(`55555: ${parameters}`);
 
         if (!parameters || Object.keys(parameters).length === 0) {
             return query;
@@ -95,19 +95,26 @@ export class QueryService {
             const value = parameters[param];
             const regex = new RegExp(`:${param}`, 'g');
 
-            // Si el valor es un array, formatea los valores como una lista para el IN
             if (Array.isArray(value)) {
-                const formattedArray = value.map(v => `'${v}'`).join(', ');
+                // Si el valor es un array, formatea los valores como una lista para el IN
+                const formattedArray = value.map(v => typeof v === 'string' ? `'${v}'` : v).join(', ');
                 query = query.replace(regex, `(${formattedArray})`);
             } else if (typeof value === 'string') {
-                // Escapar valor si es una cadena
+                // Si el valor es una cadena, escapar con comillas simples
                 query = query.replace(regex, `'${value}'`);
+            } else if (typeof value === 'number') {
+                // Si el valor es numérico (entero o decimal), no usar comillas
+                query = query.replace(regex, String(value));
+            } else if (typeof value === 'boolean') {
+                // Si el valor es booleano, convertirlo a 1 (true) o 0 (false)
+                query = query.replace(regex, value ? 'true' : 'false');
+            } else if (value === null || value === undefined) {
+                // Si el valor es null o undefined, usar NULL en SQL
+                query = query.replace(regex, 'NULL');
             } else {
-                // Dejar el valor sin comillas si no es una cadena
-                query = query.replace(regex, value);
+                throw new Error(`Tipo de valor no soportado para el parámetro: ${param}`);
             }
         });
-
         return query;
     }
 
