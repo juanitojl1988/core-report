@@ -3,26 +3,11 @@ FROM node:22-alpine
 
 
 RUN apk add --no-cache \
-    alsa-lib \
-    cups-libs \
-    dbus \
-    libx11 \
-    libxcomposite \
-    libxcursor \
-    libxdamage \
-    libxext \
-    libxfixes \
-    libxi \
-    libxrandr \
-    libxrender \
-    libxtst \
     nss \
-    chromium \
     harfbuzz \
     ca-certificates \
     ttf-freefont \
-    nodejs \
-    yarn
+    chromium
 
 # Configurar Puppeteer para usar Chromium instalado por apk
 ENV PUPPETEER_SKIP_DOWNLOAD=true \

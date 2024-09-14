@@ -9,7 +9,11 @@ export class JsReportService {
     constructor() {
         this.jsreportInstance = jsreport();
         this.jsreportInstance.init().then(() => {
+
             this.jsreportInstance.options.chrome = {
+                launchOptions: {
+                    args: ['--no-sandbox', '--disable-setuid-sandbox'], // Agrega los argumentos necesarios
+                },
                 timeout: 600000000 // Aumenta el timeout según sea necesario
             };
         }).catch((err) => {
