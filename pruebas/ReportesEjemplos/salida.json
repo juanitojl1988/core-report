@@ -1,24 +1,18 @@
 {
     "query": {
-        "one": {
-            "type": "one",
-            "sql": "SELECT 1 AS generationDate, \u0027Juan\u0027 AS generatedBy, \u0027juan@example.com\u0027 AS station"
-        },
         "list": {
-            "type": "list",
-            "sql": "select cusuario as id,razon_social as name,email as email from usuario where cusuario\u003d5",
-            "sqlCount": "select count(*) from usuario u where cusuario\u003d5"
+            "sql": "select cusuario as id,razon_social as name,email as email from usuario where fecha_registro between  :fecha_inicio and :fecha_fin",
+            "sqlCount": "select count(*) from usuario where fecha_registro between  :fecha_inicio and :fecha_fin",
+            "parameter": {
+                "fecha_inicio": "2024-09-20",
+                "fecha_fin": "2024-09-28"
+            }
         }
     },
-    "template": "\u003cstyle\u003e table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-top: 20px; } th, td { border: 1px solid #000; padding: 8px; text-align: left; } th { background-color: #4CAF50; color: white; font-weight: bold; } tr:nth-child(even) { background-color: #f2f2f2; } tr:hover { background-color: #ddd; } .title { text-align: center; font-size: 18px; margin: 10px 0; } .header { font-size: 14px; margin: 5px 0; font-weight: normal; } \u003c/style\u003e \u003ctable\u003e \u003cthead\u003e \u003ctr\u003e \u003cth colspan\u003d\u00273\u0027 class\u003d\u0027title\u0027\u003eReporte de Usuarios\u003c/th\u003e \u003c/tr\u003e \u003ctr\u003e \u003cth class\u003d\u0027header\u0027\u003eFecha de Generación:\u003c/th\u003e \u003ctd class\u003d\u0027header\u0027 colspan\u003d\u00272\u0027\u003e{{one.generationdate}}\u003c/td\u003e \u003c/tr\u003e \u003ctr\u003e \u003cth class\u003d\u0027header\u0027\u003eGenerado por:\u003c/th\u003e \u003ctd class\u003d\u0027header\u0027 colspan\u003d\u00272\u0027\u003e{{one.generatedby}}\u003c/td\u003e \u003c/tr\u003e \u003ctr\u003e \u003cth class\u003d\u0027header\u0027\u003eEstación:\u003c/th\u003e \u003ctd class\u003d\u0027header\u0027 colspan\u003d\u00272\u0027\u003e{{one.station}}\u003c/td\u003e \u003c/tr\u003e \u003ctr\u003e \u003ctd colspan\u003d\u00273\u0027 style\u003d\u0027height: 10px;\u0027\u003e\u003c/td\u003e \u003c!-- Fila de separación --\u003e \u003c/tr\u003e \u003ctr\u003e \u003cth\u003eID\u003c/th\u003e \u003cth\u003eNombre\u003c/th\u003e \u003cth\u003eEmail\u003c/th\u003e \u003c/tr\u003e \u003c/thead\u003e \u003ctbody\u003e {{#each list}} \u003ctr\u003e \u003ctd\u003e{{this.id}}\u003c/td\u003e \u003ctd\u003e{{this.name}}\u003c/td\u003e \u003ctd\u003e{{this.email}}\u003c/td\u003e \u003c/tr\u003e {{/each}} \u003c/tbody\u003e \u003c/table\u003e",
+    "template": "",
     "haveData": "no",
-    "type": "xlsx",
-    "nameReport": "Reporte de Usuarios",
-    "isView": false
-}
-
-{
-    "downloadUrl": "http://tu-api-nest.com/reports/download?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaWxlUGF0aCI6Ii9ob21lL3BhYmxpdG8vRG9jdW1lbnRvcy9MYXRhbXRlay9Qcm95ZWN0b1JlcG9ydGVyaWEvY29yZVJlcG9ydGUvY29yZS1yZXBvcnQvZGlzdC9SZXBvUmVwb3J0ZXMvUmVwb3J0ZV8xNzI1NzQ2MzQyMDQ0LTZ4ZDVraS54bHN4IiwiaWF0IjoxNzI1NzQ2MzQyLCJleHAiOjE3MjU3NDY5NDJ9.pq1TOwFLh7b57mjeGMt-PNvEfXkNJb5cC7VicGA-aRQ",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaWxlUGF0aCI6Ii9ob21lL3BhYmxpdG8vRG9jdW1lbnRvcy9MYXRhbXRlay9Qcm95ZWN0b1JlcG9ydGVyaWEvY29yZVJlcG9ydGUvY29yZS1yZXBvcnQvZGlzdC9SZXBvUmVwb3J0ZXMvUmVwb3J0ZV8xNzI1NzQ2MzQyMDQ0LTZ4ZDVraS54bHN4IiwiaWF0IjoxNzI1NzQ2MzQyLCJleHAiOjE3MjU3NDY5NDJ9.pq1TOwFLh7b57mjeGMt-PNvEfXkNJb5cC7VicGA-aRQ",
-    "filePath": "/home/pablito/Documentos/Latamtek/ProyectoReporteria/coreReporte/core-report/dist/RepoReportes/Reporte_1725746342044-6xd5ki.xlsx"
+    "type": "xlsx2",
+    "nameReport": "Reporte de Usuarios por fechas excel",
+    "templeteIsDefaul": "si",
+    "templateIsFile": false
 }

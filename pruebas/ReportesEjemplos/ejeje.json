@@ -1,0 +1,5 @@
+{
+    "message": "Error al generateReport, Error: InternalServerErrorException: Error al extractData: \nInvalid `prisma.$queryRawUnsafe()` invocation:\n\n\nRaw query failed. Code: `42601`. Message: `ERROR: syntax error at or near \":\"`",
+    "error": "Internal Server Error",
+    "statusCode": 500
+}
