@@ -69,7 +69,7 @@ export class PdfReportGenerator implements ReportGenerator {
             return response.content;
         } catch (err) {
             this.logger.error('Error al generar el reporte PdfReportGenerator:', err);
-            throw new InternalServerErrorException('Error al generar el reporte PdfReportGenerator:' + err.message);
+            throw err;
         }
     }
 }

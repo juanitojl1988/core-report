@@ -33,7 +33,7 @@ export class ReportsController {
             return res.json({ token, pathFile, sizeBytes, fileExtension, elapsedTimeInSeconds });
         } catch (error) {
             this.logger.error("Error al generateReport, Error: " + error);
-            throw new InternalServerErrorException("Error al generateReport, Error: " + error);
+            throw error;
         }
     }
 

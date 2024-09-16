@@ -17,7 +17,7 @@ export class DocxReportGenerator implements ReportGenerator {
         const { template, haveData, query, templateIsFile, extTemplate } = createReportDto;
         if (!templateIsFile) {
             this.logger.error("Este Tipo de Reporte solo permite plantilla de tipo Archivo");
-            throw new InternalServerErrorException("Este Tipo de Reporte solo permite plantilla de tipo Archivo");
+            throw new BadRequestException("Este Tipo de Reporte solo permite plantilla de tipo Archivo");
         }
 
         if (templateIsFile && !(extTemplate === 'doc' || extTemplate === 'docx')) {
@@ -56,7 +56,7 @@ export class DocxReportGenerator implements ReportGenerator {
             return response.content;
         } catch (err) {
             this.logger.error('Error al generar el reporte DocxReportGenerator:', err);
-            throw new InternalServerErrorException('Error al generar el reporte DocxReportGenerator:' + err.message);
+            throw err;
         }
     }
 }

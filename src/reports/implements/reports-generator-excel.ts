@@ -49,7 +49,7 @@ export class ExcelReportGenerator implements ReportGenerator {
             return response.content;
         } catch (err) {
             this.logger.error('Error al generar el reporte ExcelReportGenerator:', err);
-            throw new InternalServerErrorException('Error al generar el reporte ExcelReportGenerator:' + err.message);
+            throw err;
         }
     }
 

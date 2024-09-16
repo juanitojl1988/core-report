@@ -83,13 +83,9 @@ export class QueryService {
 
 
     replaceQueryParams(query: string, parameters: Record<string, any>): string {
-
-       // this.logger.log(`55555: ${parameters}`);
-
         if (!parameters || Object.keys(parameters).length === 0) {
             return query;
         }
-
         // Reemplaza cada parámetro en la consulta
         Object.keys(parameters).forEach(param => {
             const value = parameters[param];
