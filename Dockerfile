@@ -1,17 +1,29 @@
 # Usa una imagen base oficial de Node.js
-FROM node:22-alpine
+FROM node:22
 
+ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
-RUN apk add --no-cache \
-    nss \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    chromium
+# Instalar dependencias del sistema necesarias para Puppeteer y Chromium
+RUN apt-get update && apt-get install -y \
+    chromium \
+    fonts-liberation \
+    libappindicator3-1 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdbus-glib-1-2 \
+    libgbm1 \
+    libnspr4 \
+    libnss3 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    x11-utils \
+    && rm -rf /var/lib/apt/lists/*
 
-# Configurar Puppeteer para usar Chromium instalado por apk
-ENV PUPPETEER_SKIP_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+# Deshabilitar la verificación del certificado
+
 
 # Establece el directorio de trabajo
 WORKDIR /usr/src/app
@@ -21,6 +33,9 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 #ENV NODE_TLS_REJECT_UNAUTHORIZED=0
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV chrome_launchOptions_args=--no-sandbox
 
 # Instala las dependencias
 RUN npm install --production

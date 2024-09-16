@@ -4,12 +4,12 @@ services:
  app:
    build: .
    ports:
-     - "3010:3000"
+     - "3000:3000"
    environment:
      - NODE_ENV=production
      - NODE_TLS_REJECT_UNAUTHORIZED='0'
      - API_KEY=1ab2c3d4e5f61ab2c3d4e5f6
-     - DATABASE_URL=postgresql://postgres:Cre8-iDe5-lAb4@172.26.1.253:5432/test_legalsat?schema=public
+     - DATABASE_URL=postgresql://postgres:12345678@10.1.99.194:5432/postgres?schema=public
      - CRON_EXPRESSION_DELETE_REPORTES=0 0 */10 * *
      - PATH_REPO_REPORTES=/app/data/RepoReporte/
      - PORT_CORE=3000

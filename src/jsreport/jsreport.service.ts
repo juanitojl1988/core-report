@@ -11,10 +11,11 @@ export class JsReportService {
         this.jsreportInstance.init().then(() => {
 
             this.jsreportInstance.options.chrome = {
+                executablePath: '/usr/bin/chromium',
                 launchOptions: {
                     args: ['--no-sandbox', '--disable-setuid-sandbox'], // Agrega los argumentos necesarios
                 },
-                timeout: 600000000 // Aumenta el timeout según sea necesario
+                timeout: 60000 // Aumenta el timeout según sea necesario
             };
         }).catch((err) => {
             this.logger.error('Error al iniciar jsreport:', err);
