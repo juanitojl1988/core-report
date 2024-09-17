@@ -6,7 +6,7 @@ import { FileManager } from 'src/util/util-files';
 import * as fs from 'fs';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
-import path from 'path';
+import * as path from 'path';
 
 @Controller('')
 export class ReportsController {
