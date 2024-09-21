@@ -76,7 +76,7 @@ export class QueryService {
             this.logger.log(`Registros Recuperados: ${result.length}`);
             return result;
         } catch (error) {
-            this.logger.error(`Error al realizar la consulta: ${error.message}`);
+            this.handlePrismaError(error); // Maneja el error de Prisma
             throw error;
         }
     }
@@ -86,15 +86,19 @@ export class QueryService {
         if (!parameters || Object.keys(parameters).length === 0) {
             return query;
         }
+      
         // Reemplaza cada parámetro en la consulta
         Object.keys(parameters).forEach(param => {
             const value = parameters[param];
-            const regex = new RegExp(`:${param}`, 'g');
+            const regex = new RegExp(`:${param}\\b`, 'g');
+
+        
+
 
             if (Array.isArray(value)) {
                 // Si el valor es un array, formatea los valores como una lista para el IN
                 const formattedArray = value.map(v => typeof v === 'string' ? `'${v}'` : v).join(', ');
-                query = query.replace(regex, `(${formattedArray})`);
+                query = query.replace(regex, `${formattedArray}`);
             } else if (typeof value === 'string') {
                 // Si el valor es una cadena, escapar con comillas simples
                 query = query.replace(regex, `'${value}'`);
