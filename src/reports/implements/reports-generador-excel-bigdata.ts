@@ -10,7 +10,75 @@ export class ExcelBigDataReportGenerator implements ReportGenerator {
     private readonly logger = new Logger('ExcelBigDataReportGenerator');
     constructor(private readonly queryService: QueryService) { }
 
+
     async generate(createReportDto: CreateReportDto): Promise<Buffer> {
+        const { paginator } = createReportDto;
+        this.logger.log(`Paginador Activado: ${paginator}`);
+
+        if (paginator === 'si')
+            return await this.generatePaginater(createReportDto);
+        else
+            return await this.generateNOPaginater(createReportDto);
+    }
+
+
+    async generateNOPaginater(createReportDto: CreateReportDto): Promise<Buffer> {
+        const { query } = createReportDto;
+        const parameter = query["list"].parameter;
+        const sql = query['list'].sql;
+
+        const workbook = new Workbook();
+        const worksheet = workbook.addWorksheet('Report');
+        const result: any[] = await this.queryService.executeQueryForBySqlAndParameter(sql, parameter);
+        if (result.length > 0) {
+            const headers = Object.keys(result[0]).map((field) => ({
+                header: field.toUpperCase(),
+                key: field,
+                width: 50,
+                // Ajusta el ancho si es necesario
+            }));
+            worksheet.columns = headers;
+            headers.forEach((header, index) => {
+                const cell = worksheet.getRow(1).getCell(index + 1);
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: '000000' }, // Fondo negro
+                };
+                cell.font = {
+                    color: { argb: 'FFFFFF' }, // Texto blanco
+                    bold: true,
+                };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' }; // Centramos el texto
+            });
+
+            result.forEach((row) => {
+                const rowData = Object.values(row).map((value) =>
+                    value !== null && value !== undefined ? value.toString() : ''
+                );
+                worksheet.addRow(rowData);
+            });
+
+
+            // Ajustar el ancho de cada columna automáticamente
+            worksheet.columns.forEach(column => {
+                let maxLength = 20; // Valor mínimo de ancho por defecto
+                column.eachCell({ includeEmpty: true }, cell => {
+                    const cellLength = cell.value ? cell.value.toString().length : 10;
+                    if (cellLength > maxLength) {
+                        maxLength = cellLength;
+                    }
+                });
+                column.width = maxLength + 2; // Añadir un margen
+            });
+
+
+            const buffer = await workbook.xlsx.writeBuffer({ useSharedStrings: false });
+            return Buffer.from(buffer);
+        }
+    }
+
+    async generatePaginater(createReportDto: CreateReportDto): Promise<Buffer> {
         const { query } = createReportDto;
         let moreData = true;
         let offset = 0;
@@ -22,7 +90,6 @@ export class ExcelBigDataReportGenerator implements ReportGenerator {
         const sql = query['list'].sql;
 
 
-        //const resultCount: { count: number }[] = await this.queryService.executeQueryOne(sqlCount);
         const resultCount: { count: number }[] = await this.queryService.executeQueryForBySqlAndParameter(sqlCount, parameter);
         this.logger.log(`Total Registros: ${resultCount[0]?.count}`);
         if (resultCount[0]?.count <= 0) {
@@ -33,12 +100,11 @@ export class ExcelBigDataReportGenerator implements ReportGenerator {
         const worksheet = workbook.addWorksheet('Report');
         while (moreData) {
             const paginatedQuery = `${sql} LIMIT ${limit} OFFSET ${offset}`;
-            //const result: any[] = await this.queryService.executeQueryOne(paginatedQuery);
             const result: any[] = await this.queryService.executeQueryForBySqlAndParameter(paginatedQuery, parameter);
             this.logger.log(`Registros Recuperados: ${result.length}, de limit: ${limit}, offset: ${offset}`);
             totalRows = totalRows + result.length;
             if (result.length < limit || totalRows >= resultCount[0]?.count) {
-                moreData = false; // No hay más datos si el resultado es menor que el límite o se han recuperado todos los registros
+                moreData = false;
             }
             offset += limit;
 
@@ -47,11 +113,10 @@ export class ExcelBigDataReportGenerator implements ReportGenerator {
                 const headers = Object.keys(result[0]).map((field) => ({
                     header: field.toUpperCase(),
                     key: field,
-                    width: 20,
+                    width: 50,
                     // Ajusta el ancho si es necesario
                 }));
                 worksheet.columns = headers;
-
                 headers.forEach((header, index) => {
                     const cell = worksheet.getRow(1).getCell(index + 1);
                     cell.fill = {
@@ -66,7 +131,6 @@ export class ExcelBigDataReportGenerator implements ReportGenerator {
                     cell.alignment = { vertical: 'middle', horizontal: 'center' }; // Centramos el texto
                 });
             }
-
             result.forEach((row) => {
                 const rowData = Object.values(row).map((value) =>
                     value !== null && value !== undefined ? value.toString() : ''
@@ -77,6 +141,5 @@ export class ExcelBigDataReportGenerator implements ReportGenerator {
         }
         const buffer = await workbook.xlsx.writeBuffer({ useSharedStrings: false });
         return Buffer.from(buffer);
-
     }
 }

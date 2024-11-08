@@ -12,6 +12,8 @@ export class CreateReportDto {
     @IsIn(['si', 'no'])
     public haveData: string;
 
+
+
     @IsOptional()
     public isView?: boolean;
 
@@ -30,6 +32,11 @@ export class CreateReportDto {
     @IsString()
     @IsNotEmpty()
     public template: string;
+
+    @ValidateIf(o => o.type == 'xlsx2')
+    @IsString()
+    @IsIn(['si', 'no'])
+    public paginator: string = 'no';
 
     @IsNotEmpty()
     @IsBoolean()
@@ -51,5 +58,5 @@ export class CreateReportDto {
     @IsNotEmpty()
     public query?: Record<string, QueryDto>;
 
-   
+
 }
