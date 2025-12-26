@@ -1,9 +1,35 @@
-# Usa una imagen base oficial de Node.js
-FROM node:22
+# ------------------------------
+# Stage 1: Build
+# ------------------------------
+FROM node:22 AS builder
 
+WORKDIR /usr/src/app
+
+# Copia los archivos de configuración
+COPY ./code/package*.json ./
+COPY ./code/prisma ./prisma/
+
+# Instala TODAS las dependencias (necesario para el build)
+RUN npm ci
+
+# Copia el código fuente
+COPY ./code/ .
+
+# Genera el cliente de Prisma
+RUN npx prisma generate
+
+# Compila el proyecto nestjs
+RUN npm run build
+
+# ------------------------------
+# Stage 2: Production
+# ------------------------------
+FROM node:22-slim
+
+ENV NODE_ENV=production
 ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
-# Instalar dependencias del sistema necesarias para Puppeteer y Chromium
+# Instalar dependencias del sistema necesarias para Puppeteer y Chromium (Runtime)
 RUN apt-get update && apt-get install -y \
     chromium \
     fonts-liberation \
@@ -20,39 +46,34 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxrandr2 \
     x11-utils \
+    openssl \
     && rm -rf /var/lib/apt/lists/*
 
-# Deshabilitar la verificación del certificado
-
-
-# Establece el directorio de trabajo
 WORKDIR /usr/src/app
 
-
-# Copia los archivos de package.json y package-lock.json
-COPY package*.json ./
-
-#ENV NODE_TLS_REJECT_UNAUTHORIZED=0
+# Variables de entorno para Puppeteer
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 ENV chrome_launchOptions_args=--no-sandbox
 
-# Instala las dependencias
-RUN npm install --production
+# Copia package.json para instalar solo dependencias de producción
+COPY ./code/package*.json ./
 
-RUN npm install -g @nestjs/cli
+# Instala solo dependencias de producción y limpia caché
+RUN npm ci --only=production && npm cache clean --force
 
-# Copia el resto de la aplicación
-COPY . .
+# Copia el build generado desde el stage 'builder'
+COPY --from=builder /usr/src/app/dist ./dist
 
-# Genera el cliente de Prisma
-RUN npx prisma generate
+# Copia el cliente de Prisma generado desde el builder (evita usar npx en producción)
+COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /usr/src/app/prisma ./prisma
 
-# Compila el proyecto
-RUN npm run build
-
-# Expone el puerto de la aplicación
+# Exponer el puerto
 EXPOSE 3000
 
-# Comando para iniciar la aplicación en modo de producción
+# Usuario no root por seguridad (opcional, pero recomendado)
+# USER node
+
+# Comando de inicio
 CMD ["npm", "run", "start:prod"]

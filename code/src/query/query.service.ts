@@ -2,43 +2,73 @@ import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common
 import { PrismaService } from './prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { QueryDto } from 'src/reports/dto/query-report.dto';
+import { QuerySectionDto } from 'src/reports/dto/create-report.dto';
 
 
 @Injectable()
 export class QueryService {
     private readonly logger = new Logger('QueryService');
-    private readonly TYPE_QUERY_LIST: string = 'list';
-    private readonly TYPE_QUERY_ONE: string = 'one';
-    private readonly LIMIT_GROUP: number = 100;
-
     constructor(private readonly prisma: PrismaService) { }
 
-    async executeQueryAndFormatData(query: Record<string, QueryDto>) {
+    async executeQueryAndFormatData(query: QuerySectionDto) {
         if (!query || Object.keys(query).length <= 0) {
             return {};
         }
-        const myData: Record<string, any> = {};
+        const resultmyData: Record<string, any> = {};
         try {
-            //Extracion de data una fila
-            const queryOne = query[this.TYPE_QUERY_ONE];
-            if (queryOne) {
-                const dataOne = await this.executeQueryForBySqlAndParameter(queryOne.sql, queryOne.parameter);
-                myData[this.TYPE_QUERY_ONE] = dataOne[0];
-            }
-
-            //Extracion de data varias filas
-            const queryList = query[this.TYPE_QUERY_LIST];
-            if (queryList) {
-                const dataList = await this.executeQuery(queryList, this.LIMIT_GROUP);
-                myData[this.TYPE_QUERY_LIST] = dataList;
-            }
-            return myData;
+            const promisesOne = (query.one || []).map(async (item) => {
+                const result = await this.executeQueryOneResult(item);
+                resultmyData[item.key] = result;
+            });
+            const promisesList = (query.list || []).map(async (item) => {
+                const result = await this.executeQueryListResult(item);
+                resultmyData[item.key] = result;
+            });
+            await Promise.all([...promisesOne, ...promisesList]);
+            return resultmyData;
         } catch (error) {
             this.logger.error("Error al extractData: " + error.message);
             throw new InternalServerErrorException("Error al extractData: " + error.message);
         }
     }
 
+
+    async executeQueryOneResult(query: QueryDto) {
+
+        try {
+            const result = await this.executeQueryForBySqlAndParameter(query.sql, query.parameter);
+            this.logger.log(`Total Registros RecuperadosOne: ${result.length}, del key ${query.key}`);
+            return result && result.length > 0 ? result[0] : {};
+        } catch (error) {
+            this.logger.error(`Error recuperando data para clave '${query.key}': ${error.message}`);
+            return {};
+        }
+    }
+
+    async executeQueryListResult(query: QueryDto) {
+        try {
+            const result = await this.executeQueryForBySqlAndParameter(query.sql, query.parameter);
+            const lista = result || [];
+            this.logger.log(`Total Registros RecuperadosOne: ${result.length}, del key ${query.key}`);
+            return lista;
+        } catch (error) {
+            this.logger.error(`Error recuperando lista para clave '${query.key}': ${error.message}`);
+            return [];
+        }
+    }
+
+
+    async executeQuerySinPaginacion(query: QueryDto) {
+        const { sql } = query;
+        try {
+            const result: any[] = await this.executeQueryForBySqlAndParameter(sql, query.parameter);
+            this.logger.log(`Total Registros Recuperados: ${result.length}`);
+            return result;
+        } catch (error) {
+            this.handlePrismaError(error); // Maneja el error de Prisma
+            throw error;
+        }
+    }
 
     async executeQuery(query: QueryDto, limit: number) {
         const { sql, sqlCount } = query;
@@ -73,7 +103,6 @@ export class QueryService {
             this.logger.log("QueryCambiado: " + sqlCambiado);
 
             const result: any[] = await this.prisma.$queryRawUnsafe(sqlCambiado);
-            this.logger.log(`Registros Recuperados: ${result.length}`);
             return result;
         } catch (error) {
             this.handlePrismaError(error); // Maneja el error de Prisma
@@ -86,15 +115,11 @@ export class QueryService {
         if (!parameters || Object.keys(parameters).length === 0) {
             return query;
         }
-      
+
         // Reemplaza cada parámetro en la consulta
         Object.keys(parameters).forEach(param => {
             const value = parameters[param];
             const regex = new RegExp(`:${param}\\b`, 'g');
-
-        
-
-
             if (Array.isArray(value)) {
                 // Si el valor es un array, formatea los valores como una lista para el IN
                 const formattedArray = value.map(v => typeof v === 'string' ? `'${v}'` : v).join(', ');

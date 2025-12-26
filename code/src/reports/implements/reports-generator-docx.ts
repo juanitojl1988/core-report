@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ReportGenerator } from '../interfaces/reports-generator';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { FileDownloader } from 'src/util/util-downloadFile';
@@ -14,7 +14,7 @@ export class DocxReportGenerator implements ReportGenerator {
     constructor(private readonly queryService: QueryService, private readonly jsReportService: JsReportService) { }
 
     async generate(createReportDto: CreateReportDto): Promise<Buffer> {
-        const { template, haveData, query, templateIsFile, extTemplate } = createReportDto;
+        const { template, query, templateIsFile, extTemplate } = createReportDto;
         if (!templateIsFile) {
             this.logger.error("Este Tipo de Reporte solo permite plantilla de tipo Archivo");
             throw new BadRequestException("Este Tipo de Reporte solo permite plantilla de tipo Archivo");
@@ -30,10 +30,11 @@ export class DocxReportGenerator implements ReportGenerator {
 
         //obtengo la data de las consultas definidas
         let data: Record<string, any> = {};
-        if (haveData === 'no')
-            data = await this.queryService.executeQueryAndFormatData(query);
-        else
-            data = createReportDto.data;
+        data = await this.queryService.executeQueryAndFormatData(query);
+        data = {
+            ...data,
+            ...(createReportDto.data || {})
+        };
 
         //genero el reporte con jsreport    
         try {

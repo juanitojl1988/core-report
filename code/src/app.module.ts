@@ -1,10 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ReportsModule } from './reports/reports.module';
-import { APP_GUARD } from '@nestjs/core';
+
+
+import { ScheduleModule } from '@nestjs/schedule';
 
 
 @Module({
-  imports: [ ReportsModule],
+  imports: [
+    ScheduleModule.forRoot(),
+    ReportsModule
+  ],
   controllers: [],
   providers: [],
 })

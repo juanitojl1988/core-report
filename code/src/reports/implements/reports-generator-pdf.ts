@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ReportGenerator } from '../interfaces/reports-generator';
 import { QueryService } from 'src/query/query.service';
 import { JsReportService } from 'src/jsreport/jsreport.service';
@@ -35,24 +35,25 @@ export class PdfReportGenerator implements ReportGenerator {
     }
 
     async generate(createReportDto: CreateReportDto): Promise<Buffer> {
-        const { template, haveData, query, templateIsFile } = createReportDto;
+        const { template, query, templateIsFile } = createReportDto;
 
         if (templateIsFile) {
             return this.generateInBaseTemplete(createReportDto);
         }
-
+        const decodedTemplate = Buffer.from(template, 'base64').toString('utf-8');
+        this.logger.log('Plantilla para Generar Reporte:', decodedTemplate);
         //obtengo la data de las consultas definidas
         let data: Record<string, any> = {};
-        if (haveData === 'no')
-            data = await this.queryService.executeQueryAndFormatData(query);
-        else
-            data = createReportDto.data;
-
+        data = await this.queryService.executeQueryAndFormatData(query);
+        data = {
+            ...data,
+            ...(createReportDto.data || {})
+        };
         try {
             const jsreportInstance = this.jsReportService.getInstance();
             const response = await jsreportInstance.render({
                 template: {
-                    content: template,
+                    content: decodedTemplate,
                     engine: 'handlebars',
                     recipe: 'chrome-pdf',
                     chrome: {

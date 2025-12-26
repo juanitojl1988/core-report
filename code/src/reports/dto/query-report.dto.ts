@@ -1,8 +1,9 @@
-import { Type } from 'class-transformer';
-import { IsIn, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPositive, IsString, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsObject, IsOptional, IsString, ValidateIf } from 'class-validator';
 
 export class QueryDto {
-
+    @IsString()
+    @IsNotEmpty()
+    key: string;
 
     @IsObject()
     @IsOptional()

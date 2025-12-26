@@ -1,18 +1,24 @@
-import { IsBoolean, IsIn, IsNotEmpty, IsObject, IsOptional, IsString, ValidateIf } from 'class-validator';
+import { IsArray, IsBoolean, IsIn, IsNotEmpty, IsObject, IsOptional, IsString, ValidateIf, ValidateNested } from 'class-validator';
 import { QueryDto } from './query-report.dto';
+import { Type } from 'class-transformer';
+
+export class QuerySectionDto {
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => QueryDto)
+    one: QueryDto[];
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => QueryDto)
+    list: QueryDto[];
+}
 
 export class CreateReportDto {
 
     @IsString()
     @IsNotEmpty()
     public nameReport: string;
-
-    @IsString()
-    @IsNotEmpty()
-    @IsIn(['si', 'no'])
-    public haveData: string;
-
-
 
     @IsOptional()
     public isView?: boolean;
@@ -53,10 +59,10 @@ export class CreateReportDto {
     @IsOptional()
     data?: Record<string, any>;
 
-    @ValidateIf(o => o.haveData === 'si')
-    @IsObject()
-    @IsNotEmpty()
-    public query?: Record<string, QueryDto>;
+    @IsOptional()                         // Permite que sea undefined si la condición de arriba no se cumple
+    @ValidateNested()                     // Valida las propiedades internas de la clase
+    @Type(() => QuerySectionDto)          // Transforma el JSON a la instancia de clase correcta
+    query?: QuerySectionDto;              // Usamos la clase específica, no un Record genérico
 
 
 }

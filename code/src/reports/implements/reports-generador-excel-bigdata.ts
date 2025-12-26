@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ReportGenerator } from '../interfaces/reports-generator';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { QueryService } from 'src/query/query.service';
@@ -13,19 +13,17 @@ export class ExcelBigDataReportGenerator implements ReportGenerator {
 
     async generate(createReportDto: CreateReportDto): Promise<Buffer> {
         const { paginator } = createReportDto;
-        this.logger.log(`Paginador Activado: ${paginator}`);
-
-        if (paginator === 'si')
-            return await this.generatePaginater(createReportDto);
-        else
-            return await this.generateNOPaginater(createReportDto);
+        // if (paginator === 'si')
+        return await this.generatePaginater(createReportDto);
+        // else
+        //    return await this.generateNOPaginater(createReportDto);
     }
 
 
     async generateNOPaginater(createReportDto: CreateReportDto): Promise<Buffer> {
         const { query } = createReportDto;
-        const parameter = query["list"].parameter;
-        const sql = query['list'].sql;
+        const parameter = query.list[0].parameter;
+        const sql = query.list[0].sql;
 
         const workbook = new Workbook();
         const worksheet = workbook.addWorksheet('Report');
@@ -85,9 +83,9 @@ export class ExcelBigDataReportGenerator implements ReportGenerator {
         let limit = 100;
         let totalRows = 0;
         let index = 0;
-        const sqlCount = query['list'].sqlCount;
-        const parameter = query["list"].parameter;
-        const sql = query['list'].sql;
+        const sqlCount = query.list[0].sqlCount;
+        const parameter = query.list[0].parameter;
+        const sql = query.list[0].sql;
 
 
         const resultCount: { count: number }[] = await this.queryService.executeQueryForBySqlAndParameter(sqlCount, parameter);
